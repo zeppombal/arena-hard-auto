@@ -29,7 +29,7 @@ def main(answer_model, judge_model):
     # Get answers
     questions = pd.read_json("data/arena-hard-v0.1/question.jsonl", lines=True)
     messages = questions["turns"].apply(turns_to_messages).tolist()
-    model = LLM(answer_model, tensor_parallel_size=4)
+    model = LLM(answer_model, tensor_parallel_size=4, max_model_len=16000)
     sampling_params = SamplingParams(temperature=0.0, max_tokens=4096)
     model_output = model.chat(messages, sampling_params, use_tqdm=True)
     answers = [output.outputs[0].text for output in model_output]
@@ -59,9 +59,7 @@ def main(answer_model, judge_model):
     with open("config/judge_config.yaml", "a") as f:
         f.write(f"\n  - {model_name}")
     subprocess.run(["python", "gen_judgment.py"])
-    subprocess.run(
-        ["python", "show_result.py", "--judge-name", judge_model, "--show-elo"]
-    )
+    subprocess.run(["python", "show_result.py", "--judge-name", judge_model])
     a = 1
 
 
