@@ -3,12 +3,12 @@ name: judgment config file for Arena Hard
 bench_name: arena-hard-v0.1
 
 # Arena Hard default
-judge_model: gpt-4-1106-preview
+judge_model: Llama-3.3-70B-Instruct
 reference: False # Optional
 ref_model: null  
 
 baseline: True
-baseline_model: gpt-4-0314
+baseline_model: Qwen2.5-72B-Instruct
 
 pairwise: True
 temperature: 0
@@ -22,4 +22,31 @@ prompt_template: ["<|User Prompt|>\n{question_1}\n\n<|The Start of Assistant A's
 
 # Add your model below for evaluation
 model_list:
-  - gpt-3.5-turbo-0125
+  # - Qwen2.5-3B-Instruct
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_ours_3B
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_ours_7B
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_ours_14B
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_qwen_3
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_qwen_7
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_qwen_14
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_with_eurollm 
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_2_7B 
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_with_mistral 
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_with_aya 
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_with_qwen 
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_add_multilingual 
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_hercule_hi 
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_hercule_fr
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_2_8x7B 
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_translated_data_3_langs 
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_multilingual_data_5_langs 
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_add_mt
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_glider
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_with_mistral_REAL
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_with_eurollm_REAL
+  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_translated_data_3_langs_REAL
+  # - Qwen2.5-7B-Instruct
+  # - Qwen2.5-14B-Instruct
+  - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_ours_3B_REAL
+  - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_ours_7B_REAL
+  - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_ours_14B_REAL

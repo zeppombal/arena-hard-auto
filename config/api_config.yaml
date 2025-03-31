@@ -26,3 +26,61 @@ gpt-4-1106-preview:
     endpoints: null
     api_type: openai
     parallel: 8
+
+claude-3-7-sonnet-20250219:
+    model_name: claude-3-7-sonnet-20250219
+    endpoints: null
+    api_type: anthropic
+    parallel: 16
+
+gpt-4:
+    model_name: gpt-4
+    endpoints: null
+    api_type: openai
+    parallel: 16
+
+gpt-4o-2024-08-06:
+    model_name: gpt-4o-2024-08-06
+    endpoints: null
+    api_type: openai
+    parallel: 16
+
+Llama-3.3-70B-Instruct:
+    model_name: Llama-3.3-70B-Instruct
+    endpoints:  
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 500
+
+Qwen2.5-72B-Instruct:
+    model_name: Qwen2.5-72B-Instruct
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 500
+
+Qwen2.5-3B-Instruct:
+    model_name: Qwen2.5-3B-Instruct
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 500
+
+Qwen2.5-7B-Instruct:
+    model_name: Qwen2.5-7B-Instruct
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 500
+
+Qwen2.5-14B-Instruct:
+    model_name: Qwen2.5-14B-Instruct
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 500

@@ -3,37 +3,44 @@
 Usage:
 python gen_api_answer --parallel 32
 """
+
 import argparse
+import concurrent.futures
 import json
 import os
 import re
 import time
-import concurrent.futures
 
-import tiktoken
 import shortuuid
+import tiktoken
 import tqdm
-
 from add_markdown_info import count_markdown_elements, remove_pattern
 from utils import (
-    load_questions,
-    load_model_answers,
-    make_config,
-    get_endpoint,
-    chat_completion_openai,
-    chat_completion_anthropic,
-    chat_completion_openai_azure,
-    chat_completion_mistral,
-    http_completion_gemini,
-    chat_completion_cohere,
-    reorg_answer_file,
     OPENAI_MODEL_LIST,
+    chat_completion_anthropic,
+    chat_completion_cohere,
+    chat_completion_mistral,
+    chat_completion_openai,
+    chat_completion_openai_azure,
+    get_endpoint,
+    http_completion_gemini,
+    load_model_answers,
+    load_questions,
+    make_config,
+    reorg_answer_file,
     temperature_config,
 )
 
 
 def get_answer(
-    question: dict, model: str, endpoint_info: dict, num_choices: int, max_tokens: int, temperature: float, answer_file: str, api_dict: dict
+    question: dict,
+    model: str,
+    endpoint_info: dict,
+    num_choices: int,
+    max_tokens: int,
+    temperature: float,
+    answer_file: str,
+    api_dict: dict,
 ):
     if question["category"] in temperature_config:
         temperature = temperature_config[question["category"]]
@@ -54,42 +61,54 @@ def get_answer(
         for j in range(len(question["turns"])):
             conv.append({"role": "user", "content": question["turns"][j]["content"]})
             if api_type == "anthropic":
-                output = chat_completion_anthropic(model=endpoint_info["model_name"],
-                                                   messages=conv,
-                                                   temperature=temperature,
-                                                   max_tokens=max_tokens)
+                output = chat_completion_anthropic(
+                    model=endpoint_info["model_name"],
+                    messages=conv,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                )
             elif api_type == "mistral":
-                output = chat_completion_mistral(model=endpoint_info["model_name"],
-                                                 messages=conv,
-                                                 temperature=temperature,
-                                                 max_tokens=max_tokens)
+                output = chat_completion_mistral(
+                    model=endpoint_info["model_name"],
+                    messages=conv,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                )
             elif api_type == "gemini":
-                output = http_completion_gemini(model=endpoint_info["model_name"],
-                                                message=question["turns"][j]["content"],
-                                                temperature=temperature,
-                                                max_tokens=max_tokens)
+                output = http_completion_gemini(
+                    model=endpoint_info["model_name"],
+                    message=question["turns"][j]["content"],
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                )
             elif api_type == "azure":
-                output = chat_completion_openai_azure(model=endpoint_info["model_name"],
-                                                      messages=conv,
-                                                      temperature=temperature,
-                                                      max_tokens=max_tokens,
-                                                      api_dict=api_dict)
+                output = chat_completion_openai_azure(
+                    model=endpoint_info["model_name"],
+                    messages=conv,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                    api_dict=api_dict,
+                )
             elif api_type == "cohere":
-                output = chat_completion_cohere(model=endpoint_info["model_name"],
-                                                messages=conv,
-                                                temperature=temperature,
-                                                max_tokens=max_tokens)
+                output = chat_completion_cohere(
+                    model=endpoint_info["model_name"],
+                    messages=conv,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                )
             else:
-                output = chat_completion_openai(model=endpoint_info["model_name"], 
-                                                messages=conv, 
-                                                temperature=temperature, 
-                                                max_tokens=max_tokens, 
-                                                api_dict=api_dict)
+                output = chat_completion_openai(
+                    model=endpoint_info["model_name"],
+                    messages=conv,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                    api_dict=api_dict,
+                )
             conv.append({"role": "assistant", "content": output})
 
             turns.append({"content": output})
         choices.append({"index": i, "turns": turns})
-    
+
     # Dump answers
     ans = {
         "question_id": question["question_id"],
@@ -98,13 +117,12 @@ def get_answer(
         "choices": choices,
         "tstamp": time.time(),
     }
-    
+
     if len(choices) == len(turns) == 1:
-        metadata = {"token_len": len(encoding.encode(output, 
-                                                     disallowed_special=()))}
-        ans["conv_metadata"] = metadata | count_markdown_elements(remove_pattern(output, 
-                                                                     re.compile("```([^`]*)```")),
-                                                                 suffix="")
+        metadata = {"token_len": len(encoding.encode(output, disallowed_special=()))}
+        ans["conv_metadata"] = metadata | count_markdown_elements(
+            remove_pattern(output, re.compile("```([^`]*)```")), suffix=""
+        )
 
     os.makedirs(os.path.dirname(answer_file), exist_ok=True)
     with open(answer_file, "a") as fout:
@@ -116,16 +134,17 @@ if __name__ == "__main__":
     parser.add_argument(
         "--setting-file", type=str, default="config/gen_answer_config.yaml"
     )
-    parser.add_argument(
-        "--endpoint-file", type=str, default="config/api_config.yaml"
-    )
+    parser.add_argument("--endpoint-file", type=str, default="config/api_config.yaml")
+    parser.add_argument("--bench_name", type=str, default=None)
     args = parser.parse_args()
 
     settings = make_config(args.setting_file)
     endpoint_list = make_config(args.endpoint_file)
+    settings["bench_name"] = args.bench_name
+    existing_answer = load_model_answers(
+        os.path.join("data", settings["bench_name"], "model_answer")
+    )
 
-    existing_answer = load_model_answers(os.path.join("data", settings["bench_name"], "model_answer"))
-    
     print(settings)
 
     for model in settings["model_list"]:
@@ -135,7 +154,9 @@ if __name__ == "__main__":
         question_file = os.path.join("data", settings["bench_name"], "question.jsonl")
         questions = load_questions(question_file)
 
-        answer_file = os.path.join("data", settings["bench_name"], "model_answer", f"{model}.jsonl")
+        answer_file = os.path.join(
+            "data", settings["bench_name"], "model_answer", f"{model}.jsonl"
+        )
         print(f"Output to {answer_file}")
 
         if "parallel" in endpoint_info:
@@ -149,15 +170,20 @@ if __name__ == "__main__":
             if model in OPENAI_MODEL_LIST:
                 tokenizer = tiktoken.encoding_for_model(endpoint_info["model_name"])
                 tokens = [tokenizer.encode(prompt) for prompt in question_list]
-                max_tokens = [(settings["max_tokens"] - len(token) - 100) for token in tokens]
+                max_tokens = [
+                    (settings["max_tokens"] - len(token) - 100) for token in tokens
+                ]
             else:
                 from transformers import AutoTokenizer
-                
+
                 os.environ["TOKENIZERS_PARALLELISM"] = "false"
                 tokenizer = AutoTokenizer.from_pretrained(endpoint_info["tokenizer"])
 
                 tokens = tokenizer(question_list)
-                max_tokens = [(settings["max_tokens"] - len(prompt) - 300) for prompt in tokens["input_ids"]]
+                max_tokens = [
+                    (settings["max_tokens"] - len(prompt) - 300)
+                    for prompt in tokens["input_ids"]
+                ]
         else:
             max_tokens = [settings["max_tokens"]] * len(questions)
 
@@ -165,7 +191,10 @@ if __name__ == "__main__":
             futures = []
             count = 0
             for index, question in enumerate(questions):
-                if model in existing_answer and question["question_id"] in existing_answer[model]:
+                if (
+                    model in existing_answer
+                    and question["question_id"] in existing_answer[model]
+                ):
                     count += 1
                     continue
                 future = executor.submit(
