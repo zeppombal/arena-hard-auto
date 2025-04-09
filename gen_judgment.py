@@ -6,6 +6,7 @@ import re
 
 import yaml
 from tqdm import tqdm
+
 from utils import (
     chat_completion_anthropic,
     chat_completion_openai,

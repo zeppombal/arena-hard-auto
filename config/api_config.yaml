@@ -31,7 +31,7 @@ claude-3-7-sonnet-20250219:
     model_name: claude-3-7-sonnet-20250219
     endpoints: null
     api_type: anthropic
-    parallel: 16
+    parallel: 8
 
 gpt-4:
     model_name: gpt-4
@@ -45,17 +45,31 @@ gpt-4o-2024-08-06:
     api_type: openai
     parallel: 16
 
-Llama-3.3-70B-Instruct:
-    model_name: Llama-3.3-70B-Instruct
+gpt-4o-2024-11-20:
+    model_name: gpt-4o-2024-11-20
+    endpoints: null
+    api_type: openai
+    parallel: 16
+
+Llama-3.2-3B-Instruct:
+    model_name: Llama-3.2-3B-Instruct
     endpoints:  
         - api_base: http://0.0.0.0:8001/v1
           api_key: token-abc123
     api_type: openai
-    parallel: 500
+    parallel: 50
 
-Qwen2.5-72B-Instruct:
-    model_name: Qwen2.5-72B-Instruct
-    endpoints:
+Llama-3.1-8B-Instruct:
+    model_name: Llama-3.1-8B-Instruct
+    endpoints:  
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+Llama-3.3-70B-Instruct:
+    model_name: Llama-3.3-70B-Instruct
+    endpoints:  
         - api_base: http://0.0.0.0:8001/v1
           api_key: token-abc123
     api_type: openai
@@ -67,7 +81,7 @@ Qwen2.5-3B-Instruct:
         - api_base: http://0.0.0.0:8001/v1
           api_key: token-abc123
     api_type: openai
-    parallel: 500
+    parallel: 50
 
 Qwen2.5-7B-Instruct:
     model_name: Qwen2.5-7B-Instruct
@@ -75,7 +89,7 @@ Qwen2.5-7B-Instruct:
         - api_base: http://0.0.0.0:8001/v1
           api_key: token-abc123
     api_type: openai
-    parallel: 500
+    parallel: 50
 
 Qwen2.5-14B-Instruct:
     model_name: Qwen2.5-14B-Instruct
@@ -83,4 +97,184 @@ Qwen2.5-14B-Instruct:
         - api_base: http://0.0.0.0:8001/v1
           api_key: token-abc123
     api_type: openai
-    parallel: 500
+    parallel: 50
+
+Qwen2.5-72B-Instruct:
+    model_name: Qwen2.5-72B-Instruct
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+gemma-2-2b-it:
+    model_name: gemma-2-2b-it
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+gemma-2-9b-it:
+    model_name: gemma-2-9b-it
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+gemma-2-27b-it:
+    model_name: gemma-2-27b-it
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+GemmaX2-28-2B-v0.1:
+    model_name: GemmaX2-28-2B-v0.1
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+GemmaX2-28-9B-v0.1:
+    model_name: GemmaX2-28-9B-v0.1
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+Tower-3.0-vesuvius-241001:
+    model_name: Tower-3.0-vesuvius-241001
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+Tower-3.0-sugarloaf-241001:
+    model_name: Tower-3.0-sugarloaf-241001
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+Tower-3.0-anthill-241001:
+    model_name: Tower-3.0-anthill-241001
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+Tower-Llama3-70B-WMT24-Merged-2106:
+    model_name: Tower-Llama3-70B-WMT24-Merged-2106
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+Tower-Mistral-7B-Porfirissimo-2607:
+    model_name: Tower-Mistral-7B-Porfirissimo-2607
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+
+Tower-4-Anthill-SFT:
+    model_name: Tower-4-Anthill-SFT
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+Tower-4-Anthill:
+    model_name: Tower-4-Anthill
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+Tower-4-Sugarloaf:
+    model_name: Tower-4-Sugarloaf
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+Tower-4-Sugarloaf-SFT:
+    model_name: Tower-4-Sugarloaf-SFT
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+Tower-4-Vesuvius:
+    model_name: Tower-4-Vesuvius
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+Tower-4-Vesuvius-SFT:
+    model_name: Tower-4-Vesuvius-SFT
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+
+ALMA-7B-R:
+    model_name: ALMA-7B-R
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+
+ALMA-13B-R:
+    model_name: ALMA-13B-R
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+
+TowerInstruct-13B-v0.1:
+    model_name: TowerInstruct-13B-v0.1
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+TowerInstruct-7B-v0.2:
+    model_name: TowerInstruct-7B-v0.2
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50
+
+TowerInstruct-Mistral-7B-v0.2:
+    model_name: TowerInstruct-Mistral-7B-v0.2
+    endpoints:
+        - api_base: http://0.0.0.0:8001/v1
+          api_key: token-abc123
+    api_type: openai
+    parallel: 50

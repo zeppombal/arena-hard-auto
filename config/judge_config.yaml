@@ -8,7 +8,7 @@ reference: False # Optional
 ref_model: null  
 
 baseline: True
-baseline_model: Qwen2.5-72B-Instruct
+baseline_model: Qwen__Qwen2.5-72B-Instruct
 
 pairwise: True
 temperature: 0
@@ -22,31 +22,41 @@ prompt_template: ["<|User Prompt|>\n{question_1}\n\n<|The Start of Assistant A's
 
 # Add your model below for evaluation
 model_list:
-  # - Qwen2.5-3B-Instruct
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_ours_3B
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_ours_7B
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_ours_14B
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_qwen_3
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_qwen_7
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_qwen_14
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_with_eurollm 
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_2_7B 
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_with_mistral 
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_with_aya 
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_with_qwen 
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_add_multilingual 
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_hercule_hi 
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_hercule_fr
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_2_8x7B 
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_translated_data_3_langs 
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_multilingual_data_5_langs 
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_add_mt
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_glider
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_with_mistral_REAL
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_prometheus_with_eurollm_REAL
-  # - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_translated_data_3_langs_REAL
-  # - Qwen2.5-7B-Instruct
-  # - Qwen2.5-14B-Instruct
-  - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_ours_3B_REAL
-  - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_ours_7B_REAL
-  - Qwen__Qwen2.5-3B-Instruct_30_n_best_qad_w_ours_14B_REAL
+  - gpt-4o-2024-11-20
+  - claude-3-7-sonnet-20250219
+  - meta-llama__Llama-2-7b-chat-hf
+  - meta-llama__Llama-2-13b-chat-hf
+  - mistralai__Mistral-7B-Instruct-v0.1
+  - meta-llama__Llama-3.2-3B-Instruct
+  - meta-llama__Llama-3.1-8B-Instruct
+  - meta-llama__Llama-3.3-70B-Instruct
+  - Qwen__Qwen2.5-3B-Instruct
+  - Qwen__Qwen2.5-7B-Instruct
+  - Qwen__Qwen2.5-14B-Instruct
+  - Qwen__Qwen2.5-72B-Instruct
+  - google__gemma-2-2b-it
+  - google__gemma-2-9b-it
+  - google__gemma-2-27b-it
+  - utter-project__EuroLLM-1.7B-Instruct
+  - utter-project__EuroLLM-9B-Instruct
+  - CohereForAI__aya-expanse-8b
+  - CohereForAI__aya-expanse-32b
+  - ModelSpace__GemmaX2-28-2B-v0.1
+  - ModelSpace__GemmaX2-28-9B-v0.1
+  - haoranxu__ALMA-7B-R
+  - haoranxu__ALMA-13B-R
+  - Unbabel__TowerInstruct-7B-v0.2
+  - Unbabel__TowerInstruct-Mistral-7B-v0.2
+  - Unbabel__TowerInstruct-13B-v0.1
+  - Unbabel__Tower-Mistral-7B-Porfirissimo-2607
+  - Unbabel__Tower-Llama3-70B-WMT24-Merged-2106
+  - Widn__Tower-3.0-anthill-241001
+  - Widn__Tower-3.0-sugarloaf-241001
+  - Widn__Tower-3.0-vesuvius-241001
+  - Widn__Tower-4-Anthill-WPO
+  - Widn__Tower-4-Anthill-SFT
+  - Widn__Tower-4-Anthill
+  - Widn__Tower-4-Sugarloaf-WPO
+  - Widn__Tower-4-Sugarloaf-SFT
+  - Widn__Tower-4-Sugarloaf
+  - Widn__Tower-4-Vesuvius-SFT

@@ -6,6 +6,7 @@ from glob import glob
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+
 from utils import load_model_answers
 from utils_math import (
     LENGTH_CONTROL_ELEMENTS,
@@ -189,7 +190,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--bench-name", type=str, default="arena-hard-v0.1")
     parser.add_argument("--judge-name", type=str, default="Llama-3.3-70B-Instruct")
-    parser.add_argument("--baseline", type=str, default="gpt-4-0314")
+    parser.add_argument("--baseline", type=str, default="Qwen__Qwen2.5-72B-Instruct")
     parser.add_argument("--load-bootstrap", action="store_true")
     parser.add_argument("--show-elo", action="store_true")
     parser.add_argument("--weight", type=int, default=3)
@@ -351,4 +352,6 @@ if __name__ == "__main__":
         col_list[-2], col_list[-1] = col_list[-1], col_list[-2]
         stats = stats.loc[:, col_list]
         stats["date"] = date_str[:4] + "-" + date_str[4:6] + "-" + date_str[6:]
-        stats.to_csv(f"leaderboard/arena_hard_leaderboard_{date_str}.csv", index=False)
+        stats.to_csv(
+            f"leaderboard/{args.bench_name}_leaderboard_{date_str}.csv", index=False
+        )

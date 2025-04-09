@@ -14,6 +14,7 @@ import time
 import shortuuid
 import tiktoken
 import tqdm
+
 from add_markdown_info import count_markdown_elements, remove_pattern
 from utils import (
     OPENAI_MODEL_LIST,
@@ -136,11 +137,17 @@ if __name__ == "__main__":
     )
     parser.add_argument("--endpoint-file", type=str, default="config/api_config.yaml")
     parser.add_argument("--bench_name", type=str, default=None)
+    parser.add_argument(
+        "--model",
+        type=str,
+        default=None,
+    )
     args = parser.parse_args()
 
     settings = make_config(args.setting_file)
     endpoint_list = make_config(args.endpoint_file)
     settings["bench_name"] = args.bench_name
+    settings["model_list"] = [args.model]
     existing_answer = load_model_answers(
         os.path.join("data", settings["bench_name"], "model_answer")
     )

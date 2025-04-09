@@ -1,12 +1,12 @@
-import os
 import json
-import time
-import yaml
+import os
 import random
-import requests
-
-from typing import Optional
+import time
 from glob import glob
+from typing import Optional
+
+import requests
+import yaml
 
 # API setting constants
 API_MAX_RETRY = 16
@@ -79,9 +79,7 @@ def get_endpoint(endpoint_list):
         return None
     assert endpoint_list is not None
     # randomly pick one
-    api_dict = random.choices(
-        endpoint_list
-    )[0]
+    api_dict = random.choices(endpoint_list)[0]
     return api_dict
 
 
@@ -96,6 +94,7 @@ def make_config(config_file: str) -> dict:
 
 def chat_completion_openai(model, messages, temperature, max_tokens, api_dict=None):
     import openai
+
     if api_dict:
         client = openai.OpenAI(
             base_url=api_dict["api_base"],
@@ -103,7 +102,7 @@ def chat_completion_openai(model, messages, temperature, max_tokens, api_dict=No
         )
     else:
         client = openai.OpenAI()
-    
+
     output = API_ERROR_OUTPUT
     for _ in range(API_MAX_RETRY):
         try:
@@ -112,7 +111,7 @@ def chat_completion_openai(model, messages, temperature, max_tokens, api_dict=No
                 messages=messages,
                 temperature=temperature,
                 max_tokens=max_tokens,
-                )
+            )
             output = completion.choices[0].message.content
             break
         except openai.RateLimitError as e:
@@ -124,21 +123,23 @@ def chat_completion_openai(model, messages, temperature, max_tokens, api_dict=No
         except KeyError:
             print(type(e), e)
             break
-    
+
     return output
 
 
-def chat_completion_openai_azure(model, messages, temperature, max_tokens, api_dict=None):
+def chat_completion_openai_azure(
+    model, messages, temperature, max_tokens, api_dict=None
+):
     import openai
     from openai import AzureOpenAI
 
     api_base = api_dict["api_base"]
     client = AzureOpenAI(
-        azure_endpoint = api_base,
-        api_key= api_dict["api_key"],
+        azure_endpoint=api_base,
+        api_key=api_dict["api_key"],
         api_version=api_dict["api_version"],
         timeout=240,
-        max_retries=2
+        max_retries=2,
     )
 
     output = API_ERROR_OUTPUT
@@ -190,7 +191,7 @@ def chat_completion_anthropic(model, messages, temperature, max_tokens, api_dict
                 stop_sequences=[anthropic.HUMAN_PROMPT],
                 max_tokens=max_tokens,
                 temperature=temperature,
-                system=sys_msg
+                system=sys_msg,
             )
             output = response.content[0].text
             break
@@ -202,14 +203,17 @@ def chat_completion_anthropic(model, messages, temperature, max_tokens, api_dict
 
 def chat_completion_mistral(model, messages, temperature, max_tokens):
     from mistralai.client import MistralClient
-    from mistralai.models.chat_completion import ChatMessage
     from mistralai.exceptions import MistralException
+    from mistralai.models.chat_completion import ChatMessage
 
     api_key = os.environ["MISTRAL_API_KEY"]
     client = MistralClient(api_key=api_key)
 
-    prompts = [ChatMessage(role=message["role"], content=message["content"]) for message in messages]
-    
+    prompts = [
+        ChatMessage(role=message["role"], content=message["content"])
+        for message in messages
+    ]
+
     output = API_ERROR_OUTPUT
     for _ in range(API_MAX_RETRY):
         try:
@@ -230,24 +234,12 @@ def chat_completion_mistral(model, messages, temperature, max_tokens):
 
 def http_completion_gemini(model, message, temperature, max_tokens):
     api_key = os.environ["GEMINI_API_KEY"]
-    
+
     safety_settings = [
-        {
-            "category": "HARM_CATEGORY_HARASSMENT",
-            "threshold": "BLOCK_NONE"
-        },
-        {
-            "category": "HARM_CATEGORY_HATE_SPEECH",
-            "threshold": "BLOCK_NONE"
-        },
-        {
-            "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-            "threshold": "BLOCK_NONE"
-        },
-        {
-            "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-            "threshold": "BLOCK_NONE"
-        },
+        {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
     ]
 
     output = API_ERROR_OUTPUT
@@ -255,16 +247,12 @@ def http_completion_gemini(model, message, temperature, max_tokens):
         response = requests.post(
             f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}",
             json={
-                "contents": [{
-                    "parts":[
-                        {"text": message}
-                    ]
-                }],
+                "contents": [{"parts": [{"text": message}]}],
                 "safetySettings": safety_settings,
-                "generationConfig":{
+                "generationConfig": {
                     "temperature": temperature,
                     "maxOutputTokens": max_tokens,
-                }
+                },
             },
         )
     except Exception as e:
@@ -276,7 +264,6 @@ def http_completion_gemini(model, message, temperature, max_tokens):
     output = response.json()["candidates"][0]["content"]["parts"][0]["text"]
 
     return output
-    
 
 
 def chat_completion_cohere(model, messages, temperature, max_tokens):
@@ -285,9 +272,7 @@ def chat_completion_cohere(model, messages, temperature, max_tokens):
     co = cohere.Client(os.environ["COHERE_API_KEY"])
     assert len(messages) > 0
 
-    template_map = {"system":"SYSTEM",
-                    "assistant":"CHATBOT",
-                    "user":"USER"}
+    template_map = {"system": "SYSTEM", "assistant": "CHATBOT", "user": "USER"}
 
     assert messages[-1]["role"] == "user"
     prompt = messages[-1]["content"]
@@ -295,7 +280,9 @@ def chat_completion_cohere(model, messages, temperature, max_tokens):
     if len(messages) > 1:
         history = []
         for message in messages[:-1]:
-            history.append({"role":template_map[message["role"]], "message":message["content"]})
+            history.append(
+                {"role": template_map[message["role"]], "message": message["content"]}
+            )
     else:
         history = None
 
@@ -317,7 +304,7 @@ def chat_completion_cohere(model, messages, temperature, max_tokens):
         except Exception as e:
             print(type(e), e)
             break
-    
+
     return output
 
 
