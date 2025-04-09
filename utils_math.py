@@ -1,11 +1,11 @@
-import pandas as pd
-import numpy as np
-import math
 import inspect
-
-from tqdm import tqdm
-from sklearn.linear_model import LogisticRegression
+import math
 from collections import defaultdict
+
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from tqdm import tqdm
 
 np.random.seed(42)
 
@@ -35,7 +35,9 @@ MARKDOWN_CONTROL_ELEMENTS = [
 ]
 
 
-def compute_mle_elo(df, SCALE=400, BASE=10, INIT_RATING=1000, baseline_model="gpt-4-0314"):
+def compute_mle_elo(
+    df, SCALE=400, BASE=10, INIT_RATING=1000, baseline_model="gpt-4-0314"
+):
     models = pd.concat([df["model_a"], df["model_b"]]).unique()
     models = pd.Series(np.arange(len(models)), index=models)
 
@@ -55,11 +57,11 @@ def compute_mle_elo(df, SCALE=400, BASE=10, INIT_RATING=1000, baseline_model="gp
     # one tie => one A win + one B win
     # find tie + tie (both bad) index
     tie_idx = (df["winner"] == "tie") | (df["winner"] == "tie (bothbad)")
-    tie_idx[len(tie_idx)//2:] = False
+    tie_idx[len(tie_idx) // 2 :] = False
     Y[tie_idx] = 1.0
 
     lr = LogisticRegression(fit_intercept=False, penalty=None, tol=1e-8)
-    lr.fit(X,Y)
+    lr.fit(X, Y)
 
     elo_scores = SCALE * lr.coef_[0] + INIT_RATING
 
@@ -69,7 +71,9 @@ def compute_mle_elo(df, SCALE=400, BASE=10, INIT_RATING=1000, baseline_model="gp
     return pd.Series(elo_scores, index=models.index).sort_values(ascending=False)
 
 
-def get_bootstrap_result(battles, func_compute_elo, num_round, baseline_model="gpt-4-0314"):
+def get_bootstrap_result(
+    battles, func_compute_elo, num_round, baseline_model="gpt-4-0314"
+):
     rows = []
     kwargs = {}
     if baseline_model in inspect.signature(func_compute_elo).parameters:
@@ -81,9 +85,14 @@ def get_bootstrap_result(battles, func_compute_elo, num_round, baseline_model="g
 
 
 def preety_print_two_ratings(ratings_1, ratings_2, column_names):
-    df = pd.DataFrame([
-        [n, ratings_1[n], ratings_2[n]] for n in ratings_1.keys()
-    ], columns=["Model", column_names[0], column_names[1]]).sort_values(column_names[0], ascending=False).reset_index(drop=True)
+    df = (
+        pd.DataFrame(
+            [[n, ratings_1[n], ratings_2[n]] for n in ratings_1.keys()],
+            columns=["Model", column_names[0], column_names[1]],
+        )
+        .sort_values(column_names[0], ascending=False)
+        .reset_index(drop=True)
+    )
     df[column_names[0]] = (df[column_names[0]] + 0.5).astype(int)
     df[column_names[1]] = (df[column_names[1]] + 0.5).astype(int)
     df.index = df.index + 1
@@ -99,10 +108,7 @@ def predict_win_rate(elo_ratings, SCALE=400, BASE=10, INIT_RATING=1000):
             wins[a][b] = ea
             wins[b][a] = 1 - ea
 
-    data = {
-        a: [wins[a][b] if a != b else np.NAN for b in names]
-        for a in names
-    }
+    data = {a: [wins[a][b] if a != b else np.nan for b in names] for a in names}
 
     df = pd.DataFrame(data, index=names)
     df.index.name = "model_a"
@@ -127,14 +133,14 @@ def fit_bt(X, Y, models, SCALE=400, INIT_RATING=1000, baseline_model="gpt-4-0314
     elo_scores = SCALE * lr.coef_[0] + INIT_RATING
     # calibrate llama-13b to 800 if applicable
     assert baseline_model in models.index
-    
+
     elo_scores += 1114 - elo_scores[models[baseline_model]]
     return (
         pd.Series(elo_scores[:p], index=models.index).sort_values(ascending=False),
         lr.coef_[0][p:],
     )
-    
-    
+
+
 def construct_style_matrices(
     df,
     BASE=10,
@@ -160,9 +166,9 @@ def construct_style_matrices(
     style_vector = np.array(
         [
             df.conv_metadata.map(
-                lambda x: x[element]
-                if type(x[element]) is int
-                else sum(x[element].values())
+                lambda x: (
+                    x[element] if type(x[element]) is int else sum(x[element].values())
+                )
             ).tolist()
             for element in style_elements
         ]
@@ -198,7 +204,9 @@ def construct_style_matrices(
     return X, Y, models
 
 
-def get_bootstrap_result_style_control(X, Y, battles, models, func_compute_elo, num_round=1000, baseline_model="gpt-4-0314"):
+def get_bootstrap_result_style_control(
+    X, Y, battles, models, func_compute_elo, num_round=1000, baseline_model="gpt-4-0314"
+):
     elos = []
     coefs = []
     assert X.shape[0] % 2 == 0 and X.shape[0] == Y.shape[0]
@@ -206,7 +214,9 @@ def get_bootstrap_result_style_control(X, Y, battles, models, func_compute_elo, 
         X.shape[0] / 2
     )  # Since we duplicate the battles when constructing X and Y, we don't want to sample the duplicates
 
-    battles_tie_idx = (battles["winner"] == "tie") | (battles["winner"] == "tie (bothbad)")
+    battles_tie_idx = (battles["winner"] == "tie") | (
+        battles["winner"] == "tie (bothbad)"
+    )
     for _ in tqdm(range(num_round), desc="bootstrap"):
         indices = np.random.choice(list(range(k)), size=(k), replace=True)
 
@@ -214,7 +224,9 @@ def get_bootstrap_result_style_control(X, Y, battles, models, func_compute_elo, 
         index2tie[battles_tie_idx] = True
 
         nontie_indices = indices[~index2tie[indices]]
-        tie_indices = np.concatenate([indices[index2tie[indices]], indices[index2tie[indices]]+k])
+        tie_indices = np.concatenate(
+            [indices[index2tie[indices]], indices[index2tie[indices]] + k]
+        )
 
         _X = np.concatenate([X[nontie_indices], X[nontie_indices], X[tie_indices]])
         _Y = np.concatenate([Y[nontie_indices], Y[nontie_indices], Y[tie_indices]])
@@ -223,7 +235,9 @@ def get_bootstrap_result_style_control(X, Y, battles, models, func_compute_elo, 
 
         states = ~_X[:, : len(models)].any(axis=0)
 
-        elo, coef = func_compute_elo(_X, _Y, models[~states], baseline_model=baseline_model)
+        elo, coef = func_compute_elo(
+            _X, _Y, models[~states], baseline_model=baseline_model
+        )
         elos.append(elo)
         coefs.append(coef)
 
