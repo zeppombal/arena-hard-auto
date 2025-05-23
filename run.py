@@ -93,6 +93,7 @@ if m in [
     "CohereForAI/aya-expanse-8b",
     "CohereForAI/aya-expanse-32b",
     "/mnt/cephfs-nvme/ricardorei/tower-internal/GRPO/output_dir/Anthill-GRPO/checkpoint-1000",
+    "Unbabel/Tower4-Sugarloaf-Vision-merged",
 ]:
     max_tokens = 4096
     truncate_prompt_tokens = 4096
@@ -130,7 +131,12 @@ if (
 else:
     tensor_parallel_size = 1
 
-llm = LLM(m, tensor_parallel_size=tensor_parallel_size, max_model_len=max_model_len)
+llm = LLM(
+    m,
+    tensor_parallel_size=tensor_parallel_size,
+    max_model_len=max_model_len,
+    # tokenizer_mode="mistral", # for pixtral
+)
 sampling_params = SamplingParams(
     temperature=0.0,
     max_tokens=max_tokens,
