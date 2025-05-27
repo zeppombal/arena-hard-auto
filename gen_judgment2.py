@@ -172,7 +172,7 @@ if __name__ == "__main__":
     for output_file in output_files.values():
         os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
-    judge_model = LLM(configs["judge_model"], max_model_len=128000) #, max_model_len=8192)
+    judge_model = LLM(configs["judge_model"], max_model_len=128000) #, tensor_parallel_size=2) #, max_model_len=8192)
     #sampling_params = SamplingParams(temperature=0.6, max_tokens=50000) #, max_tokens=8192)
 
     for model in models:
@@ -203,13 +203,14 @@ if __name__ == "__main__":
             convs = make_convo(**kwargs)
             all_convos.extend(convs)
 
-        if configs['judge_model'] in ["meta-llama/Llama-3.1-8B", "Qwen/Qwen2.5-14B"]:   # Use this for DeepSeek models for comparison?
+        if configs['judge_model'] in ["meta-llama/Llama-3.1-8B", "Qwen/Qwen2.5-14B", "Qwen/Qwen2.5-32B"]:   # Use this for DeepSeek models for comparison?
             prompt_texts = [chat_to_prompt(conv) for conv in all_convos]
             sampling_params = SamplingParams(temperature=0, max_tokens=500, stop=["[ENDOFGENERATION]"]) #, max_tokens=8192)
             model_outputs = judge_model.generate(prompt_texts, sampling_params=sampling_params) #, stop=["end of generation(tambem funciona com chat)"])
             #import pdb; pdb.set_trace()
         else:
-            sampling_params = SamplingParams(temperature=0, max_tokens=500)
+            sampling_params = SamplingParams(temperature=0, max_tokens=50000)
+            #sampling_params = SamplingParams(temperature=0, max_tokens=500)
             model_outputs = judge_model.chat(all_convos, sampling_params=sampling_params)   
 
         #model_outputs = judge_model.chat(all_convos, sampling_params=sampling_params)
@@ -237,6 +238,7 @@ if __name__ == "__main__":
             all_outputs.append(output)
 
         # save outputs
+        output_file = output_files[model]
         with open(output_file, "w") as f:
             for output in all_outputs:
                 f.write(json.dumps(output, ensure_ascii=False) + "\n")
