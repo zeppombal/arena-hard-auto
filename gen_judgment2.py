@@ -247,6 +247,7 @@ if __name__ == "__main__":
 
         # save outputs
         output_file = output_files[model]
+        output_file = output_files[model]
         with open(output_file, "w") as f:
             for output in all_outputs:
                 f.write(json.dumps(output, ensure_ascii=False) + "\n")
