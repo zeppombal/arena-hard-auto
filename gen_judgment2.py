@@ -1,8 +1,8 @@
 import argparse
 import json
 import os
-import re
 import random
+import re
 
 from utils import load_model_answers, load_questions, make_config
 from vllm import LLM, SamplingParams
@@ -38,26 +38,25 @@ def shuffle_fewshot(prompt):
     return prompt
 
 
-
 def chat_to_prompt(chat):
     """
-    Converts a chat conversation (list of dicts with 'role' and 'content') 
+    Converts a chat conversation (list of dicts with 'role' and 'content')
     into a plain string prompt for models like LLaMA-3 that use .generate().
     """
     prompt = ""
     for turn in chat:
         if turn["role"] == "system":
-            #prompt += f"<|System Prompt|>\n{turn['content'].strip()}\n\n"  # <|User Prompt|>   <|The End of Assistant A's Answer|>
+            # prompt += f"<|System Prompt|>\n{turn['content'].strip()}\n\n"  # <|User Prompt|>   <|The End of Assistant A's Answer|>
             prompt += f"{turn['content'].strip()}\n\n"
         elif turn["role"] == "user":
             prompt += f"{turn['content'].strip()}\n\n"
         elif turn["role"] == "assistant":
-            #prompt += f"<|Assistant Answer|>\n{turn['content'].strip()}\n\n"
+            # prompt += f"<|Assistant Answer|>\n{turn['content'].strip()}\n\n"
             prompt += f"{turn['content'].strip()}\n\n"
-    #prompt = prompt.strip()
-    #if shot == "fewshot":
+    # prompt = prompt.strip()
+    # if shot == "fewshot":
     #    prompt = shuffle_fewshot(prompt)
-    #elif shot == "zeroshot":    
+    # elif shot == "zeroshot":
     #    prompt = shuffle_zeroshot(prompt)
     return prompt.strip()
 
@@ -87,10 +86,10 @@ def make_convo(**args):
     convs = []
     for game in range(num_games):
         conv = [{"role": "system", "content": configs["system_prompt"]}]
-        #conv = [{"role": "system", "content": ""}]
+        # conv = [{"role": "system", "content": ""}]
 
         for template in configs["prompt_template"]:
-            #template = shuffle_fewshot(template) # IDENTIFY HERE FEWSHOT OR ZEROSHOT; COMMENT THIS FOR NO SHUFFLE
+            # template = shuffle_fewshot(template) # IDENTIFY HERE FEWSHOT OR ZEROSHOT; COMMENT THIS FOR NO SHUFFLE
             prompt_args = {}
 
             for i, turn in enumerate(question["turns"]):
@@ -172,9 +171,10 @@ if __name__ == "__main__":
     for output_file in output_files.values():
         os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
-    judge_model = LLM(configs["judge_model"], max_model_len=128000) #, max_model_len=8192)
-    #sampling_params = SamplingParams(temperature=0.6, max_tokens=50000) #, max_tokens=8192)
-
+    judge_model = LLM(
+        configs["judge_model"], max_model_len=128000, tensor_parallel_size=4
+    )  # , max_model_len=8192)
+    # sampling_params = SamplingParams(temperature=0.6, max_tokens=50000) #, max_tokens=8192)
     for model in models:
         all_convos = []
         for question in questions:
@@ -203,16 +203,25 @@ if __name__ == "__main__":
             convs = make_convo(**kwargs)
             all_convos.extend(convs)
 
-        if configs['judge_model'] in ["meta-llama/Llama-3.1-8B", "Qwen/Qwen2.5-14B"]:   # Use this for DeepSeek models for comparison?
+        if configs["judge_model"] in [
+            "meta-llama/Llama-3.1-8B",
+            "Qwen/Qwen2.5-14B",
+        ]:  # Use this for DeepSeek models for comparison?
             prompt_texts = [chat_to_prompt(conv) for conv in all_convos]
-            sampling_params = SamplingParams(temperature=0, max_tokens=500, stop=["[ENDOFGENERATION]"]) #, max_tokens=8192)
-            model_outputs = judge_model.generate(prompt_texts, sampling_params=sampling_params) #, stop=["end of generation(tambem funciona com chat)"])
-            #import pdb; pdb.set_trace()
+            sampling_params = SamplingParams(
+                temperature=0, max_tokens=500, stop=["[ENDOFGENERATION]"]
+            )  # , max_tokens=8192)
+            model_outputs = judge_model.generate(
+                prompt_texts, sampling_params=sampling_params
+            )  # , stop=["end of generation(tambem funciona com chat)"])
+            # import pdb; pdb.set_trace()
         else:
-            sampling_params = SamplingParams(temperature=0, max_tokens=500)
-            model_outputs = judge_model.chat(all_convos, sampling_params=sampling_params)   
+            sampling_params = SamplingParams(temperature=0, max_tokens=50000)
+            model_outputs = judge_model.chat(
+                all_convos, sampling_params=sampling_params
+            )
 
-        #model_outputs = judge_model.chat(all_convos, sampling_params=sampling_params)
+        # model_outputs = judge_model.chat(all_convos, sampling_params=sampling_params)
         generations = [output.outputs[0].text for output in model_outputs]
         all_scores = [get_score(j, pattern)[0] for j in generations]
         # create outputs to save
@@ -237,6 +246,7 @@ if __name__ == "__main__":
             all_outputs.append(output)
 
         # save outputs
+        output_file = output_files[model]
         with open(output_file, "w") as f:
             for output in all_outputs:
                 f.write(json.dumps(output, ensure_ascii=False) + "\n")

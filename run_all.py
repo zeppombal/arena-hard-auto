@@ -1,8 +1,8 @@
 import argparse
 import os
 import subprocess
-import jinja2
 
+import jinja2
 
 SBATCH_TEMPLATE = """#!/bin/bash
 #SBATCH --job-name=arena-hard-deepseek
@@ -65,17 +65,17 @@ def main():
     baseline = args.baseline
     bench_names = args.bench_names
 
-    #bench_names = [
-        #"arena-hard-v0.1",
-        #"m-arena-hard-zh",
-        #"m-arena-hard-fr",
-        #"m-arena-hard-ko"
-    #]
+    # bench_names = [
+    # "arena-hard-v0.1",
+    # "m-arena-hard-zh",
+    # "m-arena-hard-fr",
+    # "m-arena-hard-ko"
+    # ]
 
     all_jobs = {}
 
     for bench in bench_names:
-        model_dir = f"/mnt/home/beatriz/arena-hard-auto/data/{bench}/model_answer/"
+        model_dir = f"data/{bench}/model_answer/"
         all_models = [
             os.path.splitext(f)[0]
             for f in os.listdir(model_dir)
@@ -84,7 +84,9 @@ def main():
 
         models_to_run = []
         for model in all_models:
-            output_file = f"/mnt/home/beatriz/arena-hard-auto/data/{bench}/model_judgment/{judge_model.replace('/', '__')}/{model}"
+            output_file = (
+                f"data/{bench}/model_judgment/{judge_model.replace('/', '__')}/{model}"
+            )
             if not os.path.exists(output_file):
                 models_to_run.append(model)
 
@@ -93,10 +95,17 @@ def main():
 
     if all_jobs:
         print("Submitting single job for all benchmarks/models.")
-        render_and_submit(judge_model, baseline, all_jobs, script_dir="sbatch_scripts", qos=args.qos, partition=args.partition)
+        render_and_submit(
+            judge_model,
+            baseline,
+            all_jobs,
+            script_dir="sbatch_scripts",
+            qos=args.qos,
+            partition=args.partition,
+        )
     else:
         print("Nothing to evaluate — all outputs already exist.")
 
+
 if __name__ == "__main__":
     main()
-
